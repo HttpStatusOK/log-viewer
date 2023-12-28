@@ -3,6 +3,10 @@
 
 <img width="1716" alt="image" src="https://github.com/HttpStatusOK/log-viewer/assets/116876598/1f044563-8c66-47dd-ab06-7653e010fcd7">
 
+错误栈信息查看
+
+<img width="1721" alt="image" src="https://github.com/HttpStatusOK/log-viewer/assets/116876598/e6f68b23-242d-4f19-9a38-1b2574896087">
+
 # 配置 Logback
 
 classpath 下创建 bogback-spring.xml 配置文件
