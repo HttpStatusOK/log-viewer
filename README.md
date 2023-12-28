@@ -1,7 +1,12 @@
 # log-viewer
 基于 Springboot logback + slf4j 的简易日志查看器
+
+<img width="1716" alt="image" src="https://github.com/HttpStatusOK/log-viewer/assets/116876598/1f044563-8c66-47dd-ab06-7653e010fcd7">
+
 # 配置 Logback
+
 classpath 下创建 bogback-spring.xml 配置文件
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true">
@@ -47,6 +52,7 @@ classpath 下创建 bogback-spring.xml 配置文件
 ```
 
 配置 requestId、uid，这里按业务需求配置就好了，方便定位日志
+
 ```java
 @Component
 public class LoggerConfiguration implements Filter {
