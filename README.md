@@ -1,1 +1,82 @@
 # log-viewer
+基于 Springboot logback + slf4j 的简易日志查看器
+# 配置 Logback
+classpath 下创建 bogback-spring.xml 配置文件
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+
+    <!-- console 日志输出 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS,GMT+8} [%X{requestId}%X{uid}] %level %logger{50} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 日志文件滚动输出 -->
+    <appender name="LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS,GMT+8} [%X{requestId}%X{uid}] %level %logger{50} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <!-- 按日期分割，最大保留 60 天，一个文件最大 100MB -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>/root/log/app-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+            <MaxHistory>60</MaxHistory>
+            <maxFileSize>100MB</maxFileSize>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- DEV 环境下用 console 输出 -->
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE" />
+        </root>
+    </springProfile>
+
+    <!-- PROD 环境下用文件输出 -->
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="LOG_FILE" />
+        </root>
+    </springProfile>
+
+</configuration>
+```
+
+配置 requestId、uid，这里按业务需求配置就好了，方便定位日志
+```java
+@Component
+public class LoggerConfiguration implements Filter {
+
+   @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
+        try {
+            String id = null;
+            try {
+                id = StpUtil.getLoginIdAsString();
+            } catch (Exception ignore) {}
+            if (StringUtils.isNotEmpty(id)) {
+                MDC.put("uid", " #" + id);
+            }
+            HttpServletRequest req = (HttpServletRequest) request;
+            HttpServletResponse resp = (HttpServletResponse) response;
+            String requestId = req.getHeader("X-Request-Id");
+            if (StringUtils.isEmpty(requestId)) {
+                requestId = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
+            }
+            MDC.put("requestId", requestId);
+            resp.setHeader("X-Request-Id", requestId);
+        } catch (Exception ignore) {}
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            MDC.clear();
+        }
+    }
+
+}
+
+```
