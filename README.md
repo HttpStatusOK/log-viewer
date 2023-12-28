@@ -7,6 +7,16 @@
 
 <img width="1721" alt="image" src="https://github.com/HttpStatusOK/log-viewer/assets/116876598/e6f68b23-242d-4f19-9a38-1b2574896087">
 
+# 应用场景
+- 小公司小项目，没有日志收集
+- 懒得上服务器 tail log
+
+# 运行逻辑
+
+1. SpringBoot Logback 日志配置文件滚动输出
+2. 做两条 API：一条用来读取日志文件夹下的文件列表，一条用来读取日志文件，然后解析返回给前端
+3. 前度根据两条 API 读取相关内容
+
 # 配置 Logback
 
 classpath 下创建 bogback-spring.xml 配置文件
